@@ -1,34 +1,29 @@
-name: Update and Display Environment Vars
+name: Increment Deployment on EC2
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  update-deployment-count:
+  increment-deployment:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Load existing .env values
-        id: load-env
+      - name: Configure SSH
         run: |
-          echo "AWS_REGION=$(grep '^AWS_REGION=' .env | cut -d '=' -f2-)" >> $GITHUB_ENV
-          echo "DEPLOYMENT_COUNT=$(grep '^DEPLOYMENT_COUNT=' .env | cut -d '=' -f2-)" >> $GITHUB_ENV
+          echo "${{ secrets.EC2_PEM }}" > ec2-key.pem
+          chmod 400 ec2-key.pem
 
-      - name: Increment DEPLOYMENT_COUNT
-        id: increment
+      - name: SSH into EC2 and increment count in .env
         run: |
-          echo "New DEPLOYMENT_COUNT=$((DEPLOYMENT_COUNT + 1))" >> $GITHUB_ENV
-
-      - name: Update .env file
-        run: |
-          sed -i "s/^DEPLOYMENT_COUNT=.*/DEPLOYMENT_COUNT=$DEPLOYMENT_COUNT/g" .env
-          cat .env
-
-      - name: Display environment info
-        run: |
-          echo "AWS_REGION: $AWS_REGION"
-          echo "DEPLOYMENT_COUNT: $DEPLOYMENT_COUNT"
+          ssh -o StrictHostKeyChecking=no -i ec2-key.pem ec2-user@${{ secrets.EC2_HOST }} << 'ENDSSH'
+            cd midterm-practice
+            # Extract current DEPLOYMENT_COUNT from .env
+            CURRENT_COUNT=$(grep '^DEPLOYMENT_COUNT=' .env | cut -d '=' -f2)
+            # Increment and replace in .env
+            NEW_COUNT=$((CURRENT_COUNT + 1))
+            sed -i "s/^DEPLOYMENT_COUNT=.*/DEPLOYMENT_COUNT=${NEW_COUNT}/" .env
+            echo "Updated DEPLOYMENT_COUNT to ${NEW_COUNT}"
+          ENDSSH
