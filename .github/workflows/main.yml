@@ -8,17 +8,15 @@ jobs:
   increment-deployment:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Check out repository
-        uses: actions/checkout@v2
-
-      - name: Configure SSH
+        env: 
+          PRIVATE_KEY: ${{ secrets.EC2_PEM }}
+          HOSTNAME: ${{ secrets.EC2_HOST }}
+          USER_NAME: ${{ secrets.EC2_USER }}
         run: |
-          echo "${{ secrets.EC2_PEM }}" > ec2-key.pem
-          chmod 400 ec2-key.pem
-
-      - name: SSH into EC2 and increment count in .env
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ec2-key.pem ec2-user@${{ secrets.EC2_HOST }} << 'ENDSSH'
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             cd midterm-practice
             # Extract current DEPLOYMENT_COUNT from .env
             CURRENT_COUNT=$(grep '^DEPLOYMENT_COUNT=' .env | cut -d '=' -f2)
