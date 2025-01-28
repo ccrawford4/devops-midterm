@@ -43,22 +43,16 @@
     </div>
 
     <script>
-        // Simulated environment variables (in a real deployment, these would come from actual env config)
-        const deploymentInfo = {
-            count: localStorage.getItem('deploymentCount') || 1,
-            timestamp: new Date().toLocaleString(),
-            environment: 'Production',
-            location: 'Global Cloud Infrastructure'
-        };
+        // Use environment variables (injected or replaced at build/deployment time)
+        const deploymentCount = "${DEPLOYMENT_COUNT}";
+        const environment = "${ENVIRONMENT}";
+        const location = "${LOCATION}";
 
-        // Increment deployment count
-        localStorage.setItem('deploymentCount', parseInt(deploymentInfo.count) + 1);
-
-        // Update DOM with deployment information
-        document.getElementById('deploy-count').textContent = `Deployment #${deploymentInfo.count}`;
-        document.getElementById('deploy-time').textContent = deploymentInfo.timestamp;
-        document.getElementById('deploy-env').textContent = deploymentInfo.environment;
-        document.getElementById('deploy-location').textContent = deploymentInfo.location;
+        // Update DOM with environment variable data
+        document.getElementById('deploy-count').textContent = `Deployment #${deploymentCount}`;
+        document.getElementById('deploy-time').textContent = new Date().toISOString();
+        document.getElementById('deploy-env').textContent = environment;
+        document.getElementById('deploy-location').textContent = location;
         document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
     </script>
 </body>
