@@ -17,7 +17,7 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
-            cd midterm-practice
+            cd /home/${USER_NAME}/midterm-practice/
             # Extract current DEPLOYMENT_COUNT from .env
             CURRENT_COUNT=$(grep '^DEPLOYMENT_COUNT=' .env | cut -d '=' -f2)
             # Increment and replace in .env
