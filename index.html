@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Information</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="bg-white shadow-2xl rounded-xl p-8 max-w-md w-full transform transition duration-500 hover:scale-105">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Deployment Insights</h1>
+        
+        <div id="deployment-info" class="space-y-4">
+            <div class="bg-gray-100 p-4 rounded-lg shadow-inner">
+                <h2 class="font-semibold text-gray-700">Deployment Count</h2>
+                <p id="deploy-count" class="text-2xl font-bold text-indigo-600">Loading...</p>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg shadow-inner">
+                <h2 class="font-semibold text-gray-700">Deployment Timestamp</h2>
+                <p id="deploy-time" class="text-xl text-gray-800">Loading...</p>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg shadow-inner">
+                <h2 class="font-semibold text-gray-700">Environment</h2>
+                <p id="deploy-env" class="text-xl text-gray-800">Loading...</p>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg shadow-inner">
+                <h2 class="font-semibold text-gray-700">Deployment Location</h2>
+                <p id="deploy-location" class="text-xl text-gray-800">Loading...</p>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center text-gray-500">
+            <p class="text-sm">Last Updated: <span id="last-updated">Just now</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Simulated environment variables (in a real deployment, these would come from actual env config)
+        const deploymentInfo = {
+            count: localStorage.getItem('deploymentCount') || 1,
+            timestamp: new Date().toLocaleString(),
+            environment: 'Production',
+            location: 'Global Cloud Infrastructure'
+        };
+
+        // Increment deployment count
+        localStorage.setItem('deploymentCount', parseInt(deploymentInfo.count) + 1);
+
+        // Update DOM with deployment information
+        document.getElementById('deploy-count').textContent = `Deployment #${deploymentInfo.count}`;
+        document.getElementById('deploy-time').textContent = deploymentInfo.timestamp;
+        document.getElementById('deploy-env').textContent = deploymentInfo.environment;
+        document.getElementById('deploy-location').textContent = deploymentInfo.location;
+        document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+    </script>
+</body>
+</html>

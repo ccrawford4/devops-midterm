@@ -1,0 +1,34 @@
+name: Update and Display Environment Vars
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  update-deployment-count:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Load existing .env values
+        id: load-env
+        run: |
+          echo "AWS_REGION=$(grep '^AWS_REGION=' .env | cut -d '=' -f2-)" >> $GITHUB_ENV
+          echo "DEPLOYMENT_COUNT=$(grep '^DEPLOYMENT_COUNT=' .env | cut -d '=' -f2-)" >> $GITHUB_ENV
+
+      - name: Increment DEPLOYMENT_COUNT
+        id: increment
+        run: |
+          echo "New DEPLOYMENT_COUNT=$((DEPLOYMENT_COUNT + 1))" >> $GITHUB_ENV
+
+      - name: Update .env file
+        run: |
+          sed -i "s/^DEPLOYMENT_COUNT=.*/DEPLOYMENT_COUNT=$DEPLOYMENT_COUNT/g" .env
+          cat .env
+
+      - name: Display environment info
+        run: |
+          echo "AWS_REGION: $AWS_REGION"
+          echo "DEPLOYMENT_COUNT: $DEPLOYMENT_COUNT"
