@@ -24,6 +24,9 @@ jobs:
             NEW_COUNT=$((CURRENT_COUNT + 1))
             sed -i "s/^DEPLOYMENT_COUNT=.*/DEPLOYMENT_COUNT=${NEW_COUNT}/" .env
             echo "Updated DEPLOYMENT_COUNT to ${NEW_COUNT}"
-            export $(cat .env | xargs)
-            sed "s|\${DEPLOYMENT_COUNT}|$DEPLOYMENT_COUNT|g; s|\${ENVIRONMENT}|$ENVIRONMENT|g" index.template.html > index.html
+            export $(cat .env | xargs) && \
+            sed -i "s/const deploymentCount = \"[^\"]*\"/const deploymentCount = \"$DEPLOYMENT_COUNT\"/" index.html && \
+            sed -i "s/const environment = \"[^\"]*\"/const environment = \"$ENVIRONMENT\"/" index.html && \
+            sed -i "s/const location = \"\"/const location = \"$LOCATION\"/" index.html && \
+            sudo systemctl restart nginx
           ENDSSH
